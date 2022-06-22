@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Crear producto
+{% endblock %}
+
+{% block contenido %}
+
+{% if form %}
+    <h2>Aca va el contenido del producto creado</h2>
+
+    <form action="" method = "POST">
+      {% csrf_token %}
+        <table>
+            {{form.as_table}}
+        </table>
+        <input type="submit", value="Enviar!">
+    </form>
+{% elif new_product %}
+
+<div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{product.name}}</h5>
+        <p class="card-text">{{product.description}}.</p>
+    </div>
+{% endif %}
+
+</div>
+
+{% endblock %}

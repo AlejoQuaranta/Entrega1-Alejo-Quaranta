@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Crear categoria
+{% endblock %}
+
+{% block contenido %}
+
+{% if form %}
+    <h2>Aca va el contenido de la categoria creada</h2>
+
+    <form action="" method = "POST">
+      {% csrf_token %}
+        <table>
+            {{form.as_table}}
+        </table>
+        <input type="submit", value="Enviar!">
+    </form>
+{% elif new_category %}
+
+<div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{category.name}}</h5>
+    </div>
+{% endif %}
+
+</div>
+
+{% endblock %}
