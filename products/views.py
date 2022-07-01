@@ -4,33 +4,50 @@ from django.shortcuts import render
 from products.models import Discount, Products , Category
 from products.forms import Product_form, Category_form, Discount_form
 from django.http import HttpResponse
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+class List_products(ListView):
+    model = Products
+    template_name = 'products.html'
+    queryset = Products.objects.filter(active = True)
 
-def products(request):
-    productos =  Products.objects.all()
-    context = {'productos':productos}
-    return render(request, 'products.html', context=context)
+#def products(request):
+ #   productos =  Products.objects.all()
+  #  context = {'productos':productos}
+   # return render(request, 'products.html', context=context)
 
 def contacto(request):
     return render(request, 'contacto.html')
 
-def detail_product(request, pk):
-    try:
-        productos = Products.objects.get(id=pk)
-        context = {'productos':productos}
-        return render(request, 'product_detail.html', context = context)
-    except:
-        context = {'error': 'El producto no existe'}
-        return render(request, 'products,html', context = context)
+class Detail_product(DetailView):
+    model = Products
+    template_name = 'detail_product.html'
+
+#def detail_product(request, pk):
+#    try:
+#        productos = Products.objects.get(id=pk)
+#        context = {'productos':productos}
+#        return render(request, 'product_detail.html', context = context)
+#    except:
+#        context = {'error': 'El producto no existe'}
+#        return render(request, 'products,html', context = context)
 
 def delete_product(request, pk):
     try:
-        productos = Products.objects.delete(id=pk)
-        context = {'message': 'Producto eliminado correctamente'}
-        return render(request, 'products.html')
+        if request.method == 'GET':
+            product = Products.objects.get(id=pk)
+            context = {'product':product} 
+        else:
+            product = Products.objects.get(id=pk)
+            product.delete()
+            context = {'message': 'Producto eliminado correctamente'}
+        
+        return render(request, 'delete_product.html')
+        
     except:
         context = {'error':'El producto no existe'}
-        return render(request, 'products.html', context = context)
+        return render(request, 'delete_product.html', context = context)
 
 
 def create_product_view(request):
