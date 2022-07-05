@@ -1,10 +1,11 @@
+from audioop import reverse
 from django import forms
 from django.http import HttpResponse
 from django.shortcuts import render
-from products.models import Discount, Products , Category
+from products.models import Discount, Products , Categoria
 from products.forms import Product_form, Category_form, Discount_form
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class List_products(ListView):
@@ -24,6 +25,22 @@ class Detail_product(DetailView):
     model = Products
     template_name = 'detail_product.html'
 
+class Update_product(UpdateView):
+    model = Products
+    template_name = 'update_product.html'
+    fields = '__all__'
+
+    def get_success_url(self):
+        return reverse('detail_product', kwargs = {'pk':self.object.pk})
+
+class Create_product(CreateView):
+    model = Products
+    template_name = 'create_product.html'
+    fields = '__all__'
+
+    def get_success_url(self):
+        return reverse('detail_product', kwargs = {'pk':self.object.pk})
+
 #def detail_product(request, pk):
 #    try:
 #        productos = Products.objects.get(id=pk)
@@ -37,7 +54,7 @@ def delete_product(request, pk):
     try:
         if request.method == 'GET':
             product = Products.objects.get(id=pk)
-            context = {'product':product} 
+            context = {'product':product}
         else:
             product = Products.objects.get(id=pk)
             product.delete()
@@ -50,12 +67,13 @@ def delete_product(request, pk):
         return render(request, 'delete_product.html', context = context)
 
 
-def create_product_view(request):
+#def create_product_view(request):
     if request.method == 'GET':
         form = Product_form()
         context = {'form':form}
         return render(request, 'create_product.html', context=context)
-    else:
+    
+    elif request.method == 'POST':
         form = Product_form(request.POST)
         if form.is_valid():
             new_product = Products.objects.create(
@@ -66,7 +84,12 @@ def create_product_view(request):
                 active = form.cleaned_data['active'],
             )
             context = {'new_product':new_product}
-        return HttpResponse('Viniste por POST')
+        else:
+            context = {'errors':form.errors}
+        return render (request, 'create_products.html', context = context)
+    
+    else:
+        return HttpResponse('Solo los metodos de GET y POST son permitidos.')
 
 def search_product_view(request):
     print(request.GET)
@@ -82,7 +105,7 @@ def create_category_view(request):
     else:
         form = Category_form(request.POST)
         if form.is_valid():
-            new_category = Category.objects.create(
+            new_category = Categoria.objects.create(
                 name = form.cleaned_data['name'],
                 description = form.cleaned_data['description'],
             )
@@ -91,7 +114,7 @@ def create_category_view(request):
 
 def search_category_view(request):
     print(request.GET)
-    category = Category.objects.filter(name__icontains = request.GET['Search'])
+    category = Categoria.objects.filter(name__icontains = request.GET['Search'])
     context = {'category':category}
     return render(request, 'search_category.html', context = context)
 

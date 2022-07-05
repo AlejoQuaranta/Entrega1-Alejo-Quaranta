@@ -50,7 +50,7 @@ def register_view(request):
         else:
             errors = form.errors
             form = User_registration_form
-            context = {'errors' = errors, 'form' = form}
+            context = {'errors':errors, 'form':form}
             return render(request, 'auth/register.html', context = context)
     else:
         form = User_registration_form()
